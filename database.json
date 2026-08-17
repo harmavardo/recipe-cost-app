@@ -1,0 +1,27 @@
+{
+  "ingredients": [
+    {"name": "Flour", "category": "Raw Material", "purchase_cost": 17.39, "purchase_quantity": 10000, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Salt", "category": "Raw Material", "purchase_cost": 6.49, "purchase_quantity": 3000, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Yeast", "category": "Raw Material", "purchase_cost": 8.99, "purchase_quantity": 908, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Sugar", "category": "Raw Material", "purchase_cost": 11.99, "purchase_quantity": 4000, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Milk", "category": "Raw Material", "purchase_cost": 4.59, "purchase_quantity": 2000, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Eggs", "category": "Raw Material", "purchase_cost": 10.99, "purchase_quantity": 1500, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Butter", "category": "Raw Material", "purchase_cost": 7.49, "purchase_quantity": 250, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Lard", "category": "Raw Material", "purchase_cost": 4.79, "purchase_quantity": 454, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Vanilla", "category": "Raw Material", "purchase_cost": 19.49, "purchase_quantity": 473, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Icing Sugar", "category": "Raw Material", "purchase_cost": 2.49, "purchase_quantity": 1000, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Shortening", "category": "Raw Material", "purchase_cost": 7.99, "purchase_quantity": 1360, "purchase_unit": "gram", "is_taxable": false},
+    {"name": "Cocoa Barry", "category": "Raw Material", "purchase_cost": 25.95, "purchase_quantity": 1000, "purchase_unit": "gram", "is_taxable": false}
+  ],
+  "packaging": [
+    {"name": "Parchment paper", "purchase_cost": 3.30, "purchase_quantity": 222, "purchase_unit": "each", "is_taxable": true},
+    {"name": "Cellophane Bags", "purchase_cost": 13.99, "purchase_quantity": 200, "purchase_unit": "each", "is_taxable": true},
+    {"name": "Labels", "purchase_cost": 25.99, "purchase_quantity": 100, "purchase_unit": "each", "is_taxable": true}
+  ],
+  "other": [
+    {"name": "Oven", "purchase_cost": 0.49, "purchase_quantity": 60, "purchase_unit": "minutes", "is_taxable": false},
+    {"name": "Mixer", "purchase_cost": 0.12, "purchase_quantity": 60, "purchase_unit": "minutes", "is_taxable": false},
+    {"name": "Fridge", "purchase_cost": 0.12, "purchase_quantity": 60, "purchase_unit": "hours", "is_taxable": false},
+    {"name": "Farmers market fee", "purchase_cost": 5.00, "purchase_quantity": 1, "purchase_unit": "each", "is_taxable": false}
+  ]
+}
