@@ -2,111 +2,174 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Cost Calculator</title>
+    <title>Bakery Recipe Cost & Formula Calculator</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 30px; background-color: #f4f6f8; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h1, h2 { color: #2c3e50; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; }
-        .btn { background-color: #27ae60; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
-        .btn:hover { background-color: #219150; }
-        .report-box { background-color: #eef9f1; border-left: 5px solid #27ae60; padding: 20px; margin-top: 30px; border-radius: 5px; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; margin: 20px; color: #1e293b; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+        th { background: #f1f5f9; }
+        input, select { width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; }
+        .card { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .btn { background: #2563eb; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn:hover { background: #1d4ed8; }
+        .summary-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Recipe Cost & Price Calculator</h1>
+        <h1>Concha Vanilla & Chocolate Calculator</h1>
         
-        <form method="POST" action="/">
-            <h2>Recipe Details</h2>
-            <div class="form-group">
-                <label>Recipe Name:</label>
-                <input type="text" name="recipe_name" placeholder="e.g., Croissant Rolls" required>
+        <div class="grid">
+            <!-- Left Column: Formula & Ingredients -->
+            <div>
+                <h2>Formula Panadera</h2>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label>Pieces:</label>
+                        <input type="number" id="pieces" value="13" onchange="runCalculation()">
+                    </div>
+                    <div>
+                        <label>Grams per Piece:</label>
+                        <input type="number" id="grams_per_piece" value="75" onchange="runCalculation()">
+                    </div>
+                </div>
+
+                <h3>Dough Ingredients</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingredient</th>
+                            <th>Weight (g)</th>
+                            <th>Percentage (%)</th>
+                            <th>Cost ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dough-rows">
+                        <!-- Populated dynamically via JavaScript -->
+                    </tbody>
+                </table>
             </div>
-            <div class="form-group">
-                <label>Batch Size (servings/units):</label>
-                <input type="number" name="batch_size" value="12" min="1" required>
+
+            <!-- Right Column: Labor, Overhead & Summary -->
+            <div>
+                <div class="card">
+                    <div class="summary-title">Labor & Overhead</div>
+                    <div class="summary-row">
+                        <label>Prep Time (min):</label>
+                        <input type="number" id="prep_time" value="120" style="width: 70px;" onchange="runCalculation()">
+                    </div>
+                    <div class="summary-row">
+                        <label>Cook Time (min):</label>
+                        <input type="number" id="cook_time" value="240" style="width: 70px;" onchange="runCalculation()">
+                    </div>
+                    <div class="summary-row">
+                        <label>Hourly Rate ($):</label>
+                        <input type="number" id="hourly_rate" value="17.00" style="width: 70px;" onchange="runCalculation()">
+                    </div>
+                    <div class="summary-row">
+                        <label>Markup (%):</label>
+                        <input type="number" id="markup_pct" value="43" style="width: 70px;" onchange="runCalculation()">
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+                    <div class="summary-title">Financial Summary</div>
+                    <div class="summary-row">
+                        <span>Ingredients Cost:</span>
+                        <strong id="res-ingredients">$0.00</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Labor Cost:</span>
+                        <strong id="res-labor">$0.00</strong>
+                    </div>
+                    <hr>
+                    <div class="summary-row">
+                        <span>Total Recipe Cost:</span>
+                        <strong id="res-total">$0.00</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Cost per Serving:</span>
+                        <strong id="res-serving">$0.00</strong>
+                    </div>
+                    <div class="summary-row" style="color: #166534; font-size: 1.2em;">
+                        <span>Recommended Price:</span>
+                        <strong id="res-price">$0.00</strong>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Labor Time (minutes):</label>
-                <input type="number" name="labor_minutes" value="90" min="0" required>
-            </div>
-
-            <h2>Ingredients</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ingredient</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in range(5) %}
-                    <tr>
-                        <td>
-                            <select name="ingredient_name">
-                                <option value="">-- Select Ingredient --</option>
-                                {% for ing in ingredients %}
-                                <option value="{{ ing.name }}">{{ ing.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td><input type="number" step="any" name="ingredient_qty" placeholder="e.g. 500"></td>
-                        <td>
-                            <select name="ingredient_unit">
-                                <option value="gram">grams</option>
-                                <option value="pound">pounds</option>
-                                <option value="ounce">ounces</option>
-                                <option value="each">each</option>
-                            </select>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <button type="submit" class="btn">Calculate Cost & Price</button>
-        </form>
-
-        {% if report %}
-        <div class="report-box">
-            <h2>Financial Report: {{ report.recipe_name }}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Calculated Cost</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in report.line_items %}
-                    <tr>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.quantity }} {{ item.unit }}</td>
-                        <td>${{ '%.2f' % item.cost }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <hr>
-            <p><strong>Ingredients Subtotal:</strong> ${{ '%.2f' % report.items_subtotal }}</p>
-            <p><strong>Taxes:</strong> ${{ '%.2f' % report.total_tax }}</p>
-            <p><strong>Labor Cost:</strong> ${{ '%.2f' % report.labor_cost }}</p>
-            <p style="font-size: 1.2em;"><strong>TOTAL BATCH COST:</strong> ${{ '%.2f' % report.total_recipe_cost }}</p>
-            <hr>
-            <p><strong>Cost per Serving:</strong> ${{ '%.2f' % report.cost_per_serving }}</p>
-            <p style="font-size: 1.3em; color: #27ae60;"><strong>RECOMMENDED SELLING PRICE:</strong> ${{ '%.2f' % report.recommended_selling_price }}</p>
         </div>
-        {% endif %}
     </div>
+
+    <script>
+        const defaultDough = [
+            { name: 'Flour', pct: 100 },
+            { name: 'Salt', pct: 1.5 },
+            { name: 'Yeast', pct: 2.5 },
+            { name: 'Milk', pct: 55 },
+            { name: 'Eggs', pct: 20 },
+            { name: 'Vanilla', pct: 1.5 },
+            { name: 'Sugar', pct: 17.5 },
+            { name: 'Butter', pct: 15 },
+            { name: 'Lard', pct: 6 }
+        ];
+
+        function renderRows() {
+            const tbody = document.getElementById('dough-rows');
+            tbody.innerHTML = '';
+            defaultDough.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td><input type="number" id="weight-${index}" placeholder="g"></td>
+                        <td><input type="number" id="pct-${index}" value="${item.pct}" step="0.1" onchange="runCalculation()"></td>
+                        <td id="cost-${index}">$0.00</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function runCalculation() {
+            const payload = {
+                pieces: document.getElementById('pieces').value,
+                grams_per_piece: document.getElementById('grams_per_piece').value,
+                prep_time: document.getElementById('prep_time').value,
+                cook_time: document.getElementById('cook_time').value,
+                hourly_rate: document.getElementById('hourly_rate').value,
+                markup_pct: document.getElementById('markup_pct').value,
+                mode: 'percentage',
+                dough_ingredients: defaultDough.map((item, idx) => ({
+                    name: item.name,
+                    pct: document.getElementById(`pct-${idx}`).value
+                }))
+            };
+
+            const response = await fetch('/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            data.calculated_dough.forEach((item, idx) => {
+                document.getElementById(`weight-${idx}`).value = item.weight;
+                document.getElementById(`cost-${idx}`).innerText = `$${item.cost.toFixed(2)}`;
+            });
+
+            document.getElementById('res-ingredients').innerText = `$${data.ingredients_cost.toFixed(2)}`;
+            document.getElementById('res-labor').innerText = `$${data.labor_cost.toFixed(2)}`;
+            document.getElementById('res-total').innerText = `$${data.total_recipe_cost.toFixed(2)}`;
+            document.getElementById('res-serving').innerText = `$${data.cost_per_serving.toFixed(2)}`;
+            document.getElementById('res-price').innerText = `$${data.selling_price.toFixed(2)}`;
+        }
+
+        renderRows();
+        runCalculation();
+    </script>
 </body>
 </html>
