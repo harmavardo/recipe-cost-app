@@ -2,102 +2,110 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bakery Recipe Cost & Formula Calculator</title>
+    <title>Dynamic Bakery Formula & Recipe Cost Calculator</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; margin: 20px; color: #1e293b; }
         .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .nav { margin-bottom: 20px; display: flex; gap: 10px; }
+        .nav a { text-decoration: none; padding: 8px 16px; background: #e2e8f0; color: #334155; border-radius: 4px; font-weight: bold; }
+        .nav a.active { background: #2563eb; color: white; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
         th { background: #f1f5f9; }
         input, select { width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; }
-        .card { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .btn { background: #2563eb; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn:hover { background: #1d4ed8; }
+        .card { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .btn { background: #2563eb; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-sm { padding: 4px 8px; font-size: 0.85em; }
+        .btn-danger { background: #ef4444; }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .summary-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .bg-yellow { background-color: #fef08a; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Concha Vanilla & Chocolate Calculator</h1>
-        
-        <div class="grid">
-            <!-- Left Column: Formula & Ingredients -->
-            <div>
-                <h2>Formula Panadera</h2>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                    <div>
-                        <label>Pieces:</label>
-                        <input type="number" id="pieces" value="13" onchange="runCalculation()">
-                    </div>
-                    <div>
-                        <label>Grams per Piece:</label>
-                        <input type="number" id="grams_per_piece" value="75" onchange="runCalculation()">
-                    </div>
-                </div>
+        <div class="nav">
+            <a href="/" class="active">Calculator & Formula</a>
+            <a href="/ingredients_page">Master Ingredients Database</a>
+        </div>
 
-                <h3>Dough Ingredients</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ingredient</th>
-                            <th>Weight (g)</th>
-                            <th>Percentage (%)</th>
-                            <th>Cost ($)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dough-rows">
-                        <!-- Populated dynamically via JavaScript -->
-                    </tbody>
+        <h1>Dynamic Bakery Calculator</h1>
+
+        <div class="grid">
+            <div>
+                <h2>Formula Panadera (Dynamic Sections)</h2>
+                <p>Add preparations/components (e.g., Main Dough, Topping, Filling/Mantecada):</p>
+                
+                <div id="sections-container"></div>
+                <button class="btn" onclick="addFormulaSection()">+ Add Preparation Section</button>
+
+                <br><br>
+                <h2>Recipe Cost Calculator</h2>
+                
+                <h3>Ingredients Cost</h3>
+                <table id="calc-ing-table">
+                    <thead><tr><th>Quantity</th><th>Ingredient</th><th>Unit Cost ($)</th><th>Recipe Cost ($)</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
                 </table>
+                <button class="btn btn-sm" onclick="addCalcRow('calc-ing-table', db.ingredients)">+ Add Ingredient Row</button>
+
+                <h3>Packaging & Supplies</h3>
+                <table id="calc-pkg-table">
+                    <thead><tr><th>Quantity</th><th>Item</th><th>Unit Cost ($)</th><th>Recipe Cost ($)</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn btn-sm" onclick="addCalcRow('calc-pkg-table', db.packaging)">+ Add Packaging Row</button>
+
+                <h3>Other / Equipment / Fees</h3>
+                <table id="calc-oth-table">
+                    <thead><tr><th>Quantity</th><th>Concept</th><th>Unit Cost ($)</th><th>Recipe Cost ($)</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn btn-sm" onclick="addCalcRow('calc-oth-table', db.other)">+ Add Other Row</button>
             </div>
 
-            <!-- Right Column: Labor, Overhead & Summary -->
+            <!-- Summary Column -->
             <div>
                 <div class="card">
-                    <div class="summary-title">Labor & Overhead</div>
+                    <div class="summary-title">Batch & Labor Parameters</div>
+                    <div class="summary-row">
+                        <label>Product Name:</label>
+                        <input type="text" id="prod_name" value="Ojo de Buey" class="bg-yellow">
+                    </div>
+                    <div class="summary-row">
+                        <label>Batch Yield (Pieces):</label>
+                        <input type="number" id="batch_size" value="20" class="bg-yellow" style="width: 70px;" onchange="calculate()">
+                    </div>
                     <div class="summary-row">
                         <label>Prep Time (min):</label>
-                        <input type="number" id="prep_time" value="120" style="width: 70px;" onchange="runCalculation()">
+                        <input type="number" id="prep_time" value="120" class="bg-yellow" style="width: 70px;" onchange="calculate()">
                     </div>
                     <div class="summary-row">
                         <label>Cook Time (min):</label>
-                        <input type="number" id="cook_time" value="240" style="width: 70px;" onchange="runCalculation()">
+                        <input type="number" id="cook_time" value="40" class="bg-yellow" style="width: 70px;" onchange="calculate()">
                     </div>
                     <div class="summary-row">
                         <label>Hourly Rate ($):</label>
-                        <input type="number" id="hourly_rate" value="17.00" style="width: 70px;" onchange="runCalculation()">
+                        <input type="number" id="hourly_rate" value="17.00" class="bg-yellow" style="width: 70px;" onchange="calculate()">
                     </div>
                     <div class="summary-row">
                         <label>Markup (%):</label>
-                        <input type="number" id="markup_pct" value="43" style="width: 70px;" onchange="runCalculation()">
+                        <input type="number" id="markup_pct" value="55" class="bg-yellow" style="width: 70px;" onchange="calculate()">
                     </div>
                 </div>
 
-                <br>
-
                 <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
                     <div class="summary-title">Financial Summary</div>
-                    <div class="summary-row">
-                        <span>Ingredients Cost:</span>
-                        <strong id="res-ingredients">$0.00</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>Labor Cost:</span>
-                        <strong id="res-labor">$0.00</strong>
-                    </div>
+                    <div class="summary-row"><span>Raw Materials:</span><strong id="res-ing">$0.00</strong></div>
+                    <div class="summary-row"><span>Packaging:</span><strong id="res-pkg">$0.00</strong></div>
+                    <div class="summary-row"><span>Other / Overhead:</span><strong id="res-oth">$0.00</strong></div>
+                    <div class="summary-row"><span>Labor Cost:</span><strong id="res-labor">$0.00</strong></div>
                     <hr>
-                    <div class="summary-row">
-                        <span>Total Recipe Cost:</span>
-                        <strong id="res-total">$0.00</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>Cost per Serving:</span>
-                        <strong id="res-serving">$0.00</strong>
-                    </div>
+                    <div class="summary-row"><span>Total Recipe Cost:</span><strong id="res-total">$0.00</strong></div>
+                    <div class="summary-row"><span>Cost per Serving:</span><strong id="res-serving">$0.00</strong></div>
                     <div class="summary-row" style="color: #166534; font-size: 1.2em;">
-                        <span>Recommended Price:</span>
+                        <span>Cost with Markup:</span>
                         <strong id="res-price">$0.00</strong>
                     </div>
                 </div>
@@ -106,70 +114,218 @@
     </div>
 
     <script>
-        const defaultDough = [
-            { name: 'Flour', pct: 100 },
-            { name: 'Salt', pct: 1.5 },
-            { name: 'Yeast', pct: 2.5 },
-            { name: 'Milk', pct: 55 },
-            { name: 'Eggs', pct: 20 },
-            { name: 'Vanilla', pct: 1.5 },
-            { name: 'Sugar', pct: 17.5 },
-            { name: 'Butter', pct: 15 },
-            { name: 'Lard', pct: 6 }
-        ];
+        const db = {{ db | tojson }};
+        let sectionCount = 0;
 
-        function renderRows() {
-            const tbody = document.getElementById('dough-rows');
-            tbody.innerHTML = '';
-            defaultDough.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${item.name}</strong></td>
-                        <td><input type="number" id="weight-${index}" placeholder="g"></td>
-                        <td><input type="number" id="pct-${index}" value="${item.pct}" step="0.1" onchange="runCalculation()"></td>
-                        <td id="cost-${index}">$0.00</td>
-                    </tr>
-                `;
-            });
+        function getOptionsHTML(dbList) {
+            return (dbList || []).map(item => `<option value="${item.name}">${item.name}</option>`).join('');
         }
 
-        async function runCalculation() {
+        function addFormulaSection(name = "Preparation", pieces = 8, grams = 50, defaultItems = []) {
+            sectionCount++;
+            const secId = `sec-${sectionCount}`;
+            const container = document.getElementById('sections-container');
+            
+            let html = `
+                <div class="card" id="${secId}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <input type="text" value="${name}" class="sec-name bg-yellow" style="font-weight: bold; width: 60%;">
+                        <button class="btn btn-danger btn-sm" onclick="document.getElementById('${secId}').remove(); calculate();">Delete Section</button>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                        <div>Pieces: <input type="number" value="${pieces}" class="sec-pieces bg-yellow" style="width: 60px;" onchange="calculate()"></div>
+                        <div>Grams per piece: <input type="number" step="0.1" value="${grams}" class="sec-grams bg-yellow" style="width: 70px;" onchange="calculate()"></div>
+                        <div>Total dough: <strong class="sec-total-dough">0</strong> g</div>
+                    </div>
+                    <table>
+                        <thead><tr><th>Ingredient</th><th>Percentage (%)</th><th>Calculated Weight (g)</th><th>Cost ($)</th><th>Action</th></tr></thead>
+                        <tbody class="sec-tbody"></tbody>
+                    </table>
+                    <button class="btn btn-sm" onclick="addFormulaRow('${secId}')">+ Add Ingredient</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+
+            if (defaultItems.length > 0) {
+                defaultItems.forEach(it => addFormulaRow(secId, it.name, it.pct));
+            } else {
+                addFormulaRow(secId, 'Flour', 100);
+            }
+            calculate();
+        }
+
+        function addFormulaRow(secId, ingName = '', pct = 0) {
+            const tbody = document.getElementById(secId).querySelector('.sec-tbody');
+            const rowHtml = `
+                <tr>
+                    <td>
+                        <select class="row-ing" onchange="calculate()">
+                            ${getOptionsHTML(db.ingredients)}
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.1" value="${pct}" class="row-pct bg-yellow" onchange="calculate()"></td>
+                    <td class="row-weight">0.00</td>
+                    <td class="row-cost">$0.00</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove(); calculate();">X</button></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+            if (ingName) {
+                const select = tbody.lastElementChild.querySelector('.row-ing');
+                select.value = ingName;
+            }
+        }
+
+        function addCalcRow(tableId, dbList, defaultQty = 1, defaultName = '') {
+            const tbody = document.getElementById(tableId).querySelector('tbody');
+            const rowHtml = `
+                <tr>
+                    <td><input type="number" step="0.01" value="${defaultQty}" class="calc-qty bg-yellow" style="width: 70px;" onchange="calculate()"></td>
+                    <td>
+                        <select class="calc-name" onchange="calculate()">
+                            ${getOptionsHTML(dbList)}
+                        </select>
+                    </td>
+                    <td class="calc-unit-cost">$0.00</td>
+                    <td class="calc-cost">$0.00</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove(); calculate();">X</button></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+            if (defaultName) {
+                tbody.lastElementChild.querySelector('.calc-name').value = defaultName;
+            }
+            calculate();
+        }
+
+        async function calculate() {
+            const sections = [];
+            document.querySelectorAll('#sections-container .card').forEach(secEl => {
+                const items = [];
+                secEl.querySelectorAll('.sec-tbody tr').forEach(r => {
+                    items.push({
+                        name: r.querySelector('.row-ing').value,
+                        pct: parseFloat(r.querySelector('.row-pct').value) || 0
+                    });
+                });
+                sections.push({
+                    name: secEl.querySelector('.sec-name').value,
+                    pieces: parseFloat(secEl.querySelector('.sec-pieces').value) || 0,
+                    grams_per_piece: parseFloat(secEl.querySelector('.sec-grams').value) || 0,
+                    items: items
+                });
+            });
+
+            function getCalcItems(tableId) {
+                const items = [];
+                document.querySelectorAll(`#${tableId} tbody tr`).forEach(r => {
+                    items.push({
+                        qty: parseFloat(r.querySelector('.calc-qty').value) || 0,
+                        name: r.querySelector('.calc-name').value
+                    });
+                });
+                return items;
+            }
+
             const payload = {
-                pieces: document.getElementById('pieces').value,
-                grams_per_piece: document.getElementById('grams_per_piece').value,
-                prep_time: document.getElementById('prep_time').value,
-                cook_time: document.getElementById('cook_time').value,
-                hourly_rate: document.getElementById('hourly_rate').value,
-                markup_pct: document.getElementById('markup_pct').value,
-                mode: 'percentage',
-                dough_ingredients: defaultDough.map((item, idx) => ({
-                    name: item.name,
-                    pct: document.getElementById(`pct-${idx}`).value
-                }))
+                sections: sections,
+                calc_ingredients: getCalcItems('calc-ing-table'),
+                calc_packaging: getCalcItems('calc-pkg-table'),
+                calc_other: getCalcItems('calc-oth-table'),
+                batch_size: parseFloat(document.getElementById('batch_size').value) || 1,
+                prep_time: parseFloat(document.getElementById('prep_time').value) || 0,
+                cook_time: parseFloat(document.getElementById('cook_time').value) || 0,
+                hourly_rate: parseFloat(document.getElementById('hourly_rate').value) || 0,
+                markup_pct: parseFloat(document.getElementById('markup_pct').value) || 0
             };
 
-            const response = await fetch('/calculate', {
+            const res = await fetch('/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            const data = await response.json();
+            const data = await res.json();
 
-            data.calculated_dough.forEach((item, idx) => {
-                document.getElementById(`weight-${idx}`).value = item.weight;
-                document.getElementById(`cost-${idx}`).innerText = `$${item.cost.toFixed(2)}`;
+            // Update Formula Panadera outputs
+            document.querySelectorAll('#sections-container .card').forEach((secEl, idx) => {
+                const secData = data.formula_sections[idx];
+                if (secData) {
+                    secEl.querySelector('.sec-total-dough').innerText = secData.total_dough;
+                    secEl.querySelectorAll('.sec-tbody tr').forEach((r, rIdx) => {
+                        const itemData = secData.items[rIdx];
+                        if (itemData) {
+                            r.querySelector('.row-weight').innerText = itemData.weight;
+                            r.querySelector('.row-cost').innerText = `$${itemData.cost.toFixed(2)}`;
+                        }
+                    });
+                }
             });
 
-            document.getElementById('res-ingredients').innerText = `$${data.ingredients_cost.toFixed(2)}`;
+            // Update Calculator outputs
+            function updateCalcOutputs(tableId, dataList) {
+                document.querySelectorAll(`#${tableId} tbody tr`).forEach((r, idx) => {
+                    const itemData = dataList[idx];
+                    if (itemData) {
+                        r.querySelector('.calc-unit-cost').innerText = `$${itemData.unit_cost.toFixed(4)}`;
+                        r.querySelector('.calc-cost').innerText = `$${itemData.cost.toFixed(2)}`;
+                    }
+                });
+            }
+
+            updateCalcOutputs('calc-ing-table', data.calc_ingredients);
+            updateCalcOutputs('calc-pkg-table', data.calc_packaging);
+            updateCalcOutputs('calc-oth-table', data.calc_other);
+
+            // Update Summary
+            document.getElementById('res-ing').innerText = `$${data.total_ingredients_cost.toFixed(2)}`;
+            document.getElementById('res-pkg').innerText = `$${data.total_packaging_cost.toFixed(2)}`;
+            document.getElementById('res-oth').innerText = `$${data.total_other_cost.toFixed(2)}`;
             document.getElementById('res-labor').innerText = `$${data.labor_cost.toFixed(2)}`;
             document.getElementById('res-total').innerText = `$${data.total_recipe_cost.toFixed(2)}`;
             document.getElementById('res-serving').innerText = `$${data.cost_per_serving.toFixed(2)}`;
             document.getElementById('res-price').innerText = `$${data.selling_price.toFixed(2)}`;
         }
 
-        renderRows();
-        runCalculation();
+        // Initialize Ojo de Buey Default Example
+        addFormulaSection('Example: Ojo de buey', 8, 50.5, [
+            { name: 'Flour', pct: 100 },
+            { name: 'Salt', pct: 1.0 },
+            { name: 'Yeast', pct: 1.0 },
+            { name: 'Water', pct: 50.0 },
+            { name: 'Butter', pct: 20.0 },
+            { name: 'Shortening', pct: 30.0 }
+        ]);
+
+        addFormulaSection('Mantecada', 8, 56.5, [
+            { name: 'Flour', pct: 100 },
+            { name: 'Canola Oil', pct: 96 },
+            { name: 'Milk', pct: 48 },
+            { name: 'Vanilla', pct: 4 },
+            { name: 'Eggs', pct: 100 },
+            { name: 'Baking Powder', pct: 2 },
+            { name: 'Sugar', pct: 100 },
+            { name: 'Salt', pct: 2 }
+        ]);
+
+        // Default Calculator Rows matching Ojo de Buey screenshot
+        addCalcRow('calc-ing-table', db.ingredients, 500, 'Flour');
+        addCalcRow('calc-ing-table', db.ingredients, 5, 'Salt');
+        addCalcRow('calc-ing-table', db.ingredients, 5, 'Yeast');
+        addCalcRow('calc-ing-table', db.ingredients, 100, 'Butter');
+        addCalcRow('calc-ing-table', db.ingredients, 150, 'Shortening');
+        addCalcRow('calc-ing-table', db.ingredients, 240, 'Canola Oil');
+        addCalcRow('calc-ing-table', db.ingredients, 120, 'Milk');
+        addCalcRow('calc-ing-table', db.ingredients, 15, 'Vanilla');
+        addCalcRow('calc-ing-table', db.ingredients, 250, 'Eggs');
+
+        addCalcRow('calc-pkg-table', db.packaging, 4, 'Parchment paper');
+        addCalcRow('calc-pkg-table', db.packaging, 20, 'Labels');
+        addCalcRow('calc-pkg-table', db.packaging, 20, 'Cellophane Bags');
+
+        addCalcRow('calc-oth-table', db.other, 40, 'Oven');
+        addCalcRow('calc-oth-table', db.other, 30, 'Mixer');
+        addCalcRow('calc-oth-table', db.other, 1, 'Farmers market fee');
     </script>
 </body>
 </html>
